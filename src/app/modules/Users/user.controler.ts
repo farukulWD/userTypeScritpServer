@@ -1,16 +1,15 @@
 import { Request, Response } from 'express';
-
-import User from './user.model';
-import { userServices } from './user.service';
 import UsersValidationSchema, { OrderDataValidation } from './user.validation';
+import { userServices } from './user.service';
+import User from './user.model';
+
 const createUser = async (req: Request, res: Response) => {
   try {
-    console.log('api hit');
-    const userdata = req.body;
-    // data validation using zod
-    const userValidationData = UsersValidationSchema.parse(userdata);
+    const userData = req.body;
+
+    const userValidationData = UsersValidationSchema.parse(userData);
     const result = await userServices.createUserIntoDb(userValidationData);
-    console.log(userdata);
+
     res.status(200).json({
       status: true,
       message: 'User created successfully',
@@ -158,10 +157,8 @@ const addOrder = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     const orderData = req.body;
-    // check if the user is exist or not
     const isUserExists = await User.isUserExists(userId);
     if (isUserExists) {
-      // orderdata validation using zod
       const orderValidationData = OrderDataValidation.parse(orderData);
       const result = await userServices.addOrderIntoDb(
         Number(userId),
@@ -231,7 +228,7 @@ const getAllOrders = async (req: Request, res: Response) => {
 const getTotalPriceOfOrders = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
-    // check if the user is exist or not
+
     const isUserExists = await User.isUserExists(userId);
     if (isUserExists) {
       const result = await userServices.getTotalPriceOfOrdersFromDb(
